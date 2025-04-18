@@ -1,0 +1,47 @@
+{
+	"name": "ds_DimViolation",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Chicago_Dallas_Snowflake",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SnowflakeV2Table",
+		"schema": [
+			{
+				"name": "VIOLATION_ID_SK",
+				"type": "NUMBER",
+				"precision": 38,
+				"scale": 0
+			},
+			{
+				"name": "VIOLATION_CODE",
+				"type": "VARCHAR"
+			},
+			{
+				"name": "VIOLATION_DESCRIPTION",
+				"type": "VARCHAR"
+			},
+			{
+				"name": "DATA_SOURCE_ID",
+				"type": "VARCHAR"
+			},
+			{
+				"name": "DATA_WORKFLOW_NAME",
+				"type": "VARCHAR"
+			},
+			{
+				"name": "DW_JOB_ID",
+				"type": "VARCHAR"
+			},
+			{
+				"name": "DW_LOAD_DT",
+				"type": "DATE"
+			}
+		],
+		"typeProperties": {
+			"schema": "CD_SCHEMA",
+			"table": "DIM_VIOLATION"
+		}
+	}
+}
