@@ -1,0 +1,33 @@
+{
+	"name": "Parquet_Violations_Optimised",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureDataLakeStorage_FinalProj",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "Violations_Optimised.parquet",
+				"fileSystem": "silver"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": [
+			{
+				"name": "Violation_Code",
+				"type": "DOUBLE"
+			},
+			{
+				"name": "Violation_Description",
+				"type": "UTF8"
+			},
+			{
+				"name": "DATA_SOURCE_ID",
+				"type": "UTF8"
+			}
+		]
+	}
+}

@@ -1,0 +1,451 @@
+{
+	"name": "df_FactInspections",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "Parquet_ChicagoCleaned",
+						"type": "DatasetReference"
+					},
+					"name": "stageChicago"
+				},
+				{
+					"dataset": {
+						"referenceName": "Parquet_dallasCleaned",
+						"type": "DatasetReference"
+					},
+					"name": "stageDallas"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_FactInspections",
+						"type": "DatasetReference"
+					},
+					"name": "FactInspectionMaxId"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_FactInspections",
+						"type": "DatasetReference"
+					},
+					"name": "FactInspection"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_DimRestaurant",
+						"type": "DatasetReference"
+					},
+					"name": "DimRestaurant"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_DimLocation",
+						"type": "DatasetReference"
+					},
+					"name": "DimLocation"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_DimInspection",
+						"type": "DatasetReference"
+					},
+					"name": "DimInspection"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_DimRisk",
+						"type": "DatasetReference"
+					},
+					"name": "DimRisk"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_DimResults",
+						"type": "DatasetReference"
+					},
+					"name": "DimResult"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_DimViolation",
+						"type": "DatasetReference"
+					},
+					"name": "DimViolation"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_DimDate",
+						"type": "DatasetReference"
+					},
+					"name": "DimDate"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_FactInspections",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "derivedColumn2"
+				},
+				{
+					"name": "union1"
+				},
+				{
+					"name": "join1"
+				},
+				{
+					"name": "join3"
+				},
+				{
+					"name": "join4"
+				},
+				{
+					"name": "join5"
+				},
+				{
+					"name": "join6"
+				},
+				{
+					"name": "join7"
+				},
+				{
+					"name": "join8"
+				},
+				{
+					"name": "join9"
+				},
+				{
+					"name": "select4"
+				},
+				{
+					"name": "surrogateKey2"
+				},
+				{
+					"name": "derivedColumn4"
+				},
+				{
+					"name": "select5"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     Job_Id as string ('59')",
+				"}",
+				"source(output(",
+				"          Inspection_ID as long,",
+				"          DBA_Name as string,",
+				"          AKA_Name as string,",
+				"          License_Num as long,",
+				"          Facility_Type as string,",
+				"          Risk as string,",
+				"          Address as string,",
+				"          City as string,",
+				"          State as string,",
+				"          Zip_Code as string,",
+				"          Inspection_Date as date,",
+				"          Inspection_Type as string,",
+				"          Results as string,",
+				"          Violation_Code as string,",
+				"          Violation_Description as string,",
+				"          Violation_Comment as string,",
+				"          Latitude as double,",
+				"          Longitude as double,",
+				"          Location as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet') ~> stageChicago",
+				"source(output(",
+				"          RowID as long,",
+				"          Restaurant_Name as string,",
+				"          Also_Known_As_Name as string,",
+				"          License_Num as long,",
+				"          Facility_Type as string,",
+				"          Risk as string,",
+				"          Street_Address as string,",
+				"          City as string,",
+				"          State as string,",
+				"          Zip_Code as string,",
+				"          Inspection_Date as date,",
+				"          Inspection_Type as string,",
+				"          Results as string,",
+				"          Violation_Code as string,",
+				"          Violation_Description as string,",
+				"          Violations_Info as string,",
+				"          Latitude as double,",
+				"          Longitude as double,",
+				"          Location as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet') ~> stageDallas",
+				"source(output(",
+				"          MAXFACTSK as decimal(38,0)",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     query: 'select NVL(MAX(FACT_INSPECTION_ID_SK),0) as MaxFactSK FROM CD_SCHEMA.FACT_INSPECTION',",
+				"     format: 'query') ~> FactInspectionMaxId",
+				"source(output(",
+				"          FACT_INSPECTION_ID_SK as decimal(38,0),",
+				"          RESTAURANT_ID_SK as decimal(38,0),",
+				"          LOCATION_ID_SK as decimal(38,0),",
+				"          INSPECTION_ID_SK as decimal(38,0),",
+				"          RISK_ID_SK as decimal(38,0),",
+				"          DATE_ID_SK as decimal(38,0),",
+				"          RESULT_ID_SK as decimal(38,0),",
+				"          VIOLATION_ID_SK as decimal(38,0),",
+				"          VIOLATION_COMMENT as string,",
+				"          INSPECTION_CNT as decimal(38,0),",
+				"          DATA_SOURCE_ID as string,",
+				"          DATA_WORKFLOW_NAME as string,",
+				"          DW_JOB_ID as string,",
+				"          DW_LOAD_DT as date",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'table') ~> FactInspection",
+				"source(output(",
+				"          RESTAURANT_ID_SK as decimal(38,0),",
+				"          RESTAURANT_NAME as string,",
+				"          ALSO_KNOWN_AS_NAME as string,",
+				"          LICENSE_NUMBER as decimal(38,0),",
+				"          FACILITY_TYPE as string,",
+				"          DATA_SOURCE_ID as string,",
+				"          DATA_WORKFLOW_NAME as string,",
+				"          DW_JOB_ID as string,",
+				"          DW_LOAD_DT as date",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'table') ~> DimRestaurant",
+				"source(output(",
+				"          LOCATION_ID_SK as decimal(38,0),",
+				"          STREET_ADDRESS as string,",
+				"          CITY as string,",
+				"          STATE as string,",
+				"          ZIP as string,",
+				"          LATITUDE as double,",
+				"          LONGITUDE as double,",
+				"          LOCATION as string,",
+				"          DATA_SOURCE_ID as string,",
+				"          DATA_WORKFLOW_NAME as string,",
+				"          DW_JOB_ID as string,",
+				"          DW_LOAD_DT as date",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'table') ~> DimLocation",
+				"source(output(",
+				"          INSPECTION_ID_SK as decimal(38,0),",
+				"          INSPECTION_TYPE as string,",
+				"          DATA_SOURCE_ID as string,",
+				"          DATA_WORKFLOW_NAME as string,",
+				"          DW_JOB_ID as string,",
+				"          DW_LOAD_DT as date",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'table') ~> DimInspection",
+				"source(output(",
+				"          RISK_ID_SK as decimal(38,0),",
+				"          RISK_LEVEL as string,",
+				"          DATA_SOURCE_ID as string,",
+				"          DATA_WORKFLOW_NAME as string,",
+				"          DW_JOB_ID as string,",
+				"          DW_LOAD_DT as date",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'table') ~> DimRisk",
+				"source(output(",
+				"          RESULT_ID_SK as decimal(38,0),",
+				"          INSPECTION_RESULTS as string,",
+				"          DATA_SOURCE_ID as string,",
+				"          DATA_WORKFLOW_NAME as string,",
+				"          DW_JOB_ID as string,",
+				"          DW_LOAD_DT as date",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'table') ~> DimResult",
+				"source(output(",
+				"          VIOLATION_ID_SK as decimal(38,0),",
+				"          VIOLATION_CODE as string,",
+				"          VIOLATION_DESCRIPTION as string,",
+				"          DATA_SOURCE_ID as string,",
+				"          DATA_WORKFLOW_NAME as string,",
+				"          DW_JOB_ID as string,",
+				"          DW_LOAD_DT as date",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'table') ~> DimViolation",
+				"source(output(",
+				"          DATE_ID_SK as decimal(38,0),",
+				"          DAY_NUM as decimal(2,0),",
+				"          DAY_NAME as string,",
+				"          DAY_ABBR as string,",
+				"          IS_WEEKEND as decimal(2,0),",
+				"          MONTH_NAME as string,",
+				"          MONTH_ABBR as string,",
+				"          MONTH_NUM as string,",
+				"          DT as date,",
+				"          YEAR_NUM as decimal(4,0),",
+				"          DATA_SOURCE_ID as string,",
+				"          DATA_WORKFLOW_NAME as string,",
+				"          DW_JOB_ID as string,",
+				"          DW_LOAD_DT as date",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'table') ~> DimDate",
+				"stageChicago derive(DATA_SOURCE_ID = 'Chicago23') ~> derivedColumn1",
+				"stageDallas derive(DATA_SOURCE_ID = 'Dallas23') ~> derivedColumn2",
+				"derivedColumn1, derivedColumn2 union(byName: false)~> union1",
+				"join9, FactInspectionMaxId join(1==1,",
+				"     joinType:'cross',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"union1, DimRestaurant join(DBA_Name == RESTAURANT_NAME",
+				"     && AKA_Name == ALSO_KNOWN_AS_NAME",
+				"     && License_Num == LICENSE_NUMBER",
+				"     && union1@Facility_Type == DimRestaurant@FACILITY_TYPE,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join3",
+				"join3, DimLocation join(Address == STREET_ADDRESS",
+				"     && union1@City == DimLocation@CITY",
+				"     && union1@State == DimLocation@STATE",
+				"     && Zip_Code == ZIP",
+				"     && union1@Latitude == DimLocation@LATITUDE",
+				"     && union1@Longitude == DimLocation@LONGITUDE",
+				"     && union1@Location == DimLocation@LOCATION,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join4",
+				"join4, DimInspection join(union1@Inspection_Type == DimInspection@INSPECTION_TYPE,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join5",
+				"join5, DimRisk join(Risk == RISK_LEVEL,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join6",
+				"join6, DimDate join(Inspection_Date == DT,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join7",
+				"join7, DimResult join(Results == INSPECTION_RESULTS,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join8",
+				"join8, DimViolation join(union1@Violation_Code == DimViolation@VIOLATION_CODE",
+				"     && union1@Violation_Description == DimViolation@VIOLATION_DESCRIPTION,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join9",
+				"join1 select(mapColumn(",
+				"          Violation_Comment,",
+				"          RESTAURANT_ID_SK,",
+				"          LOCATION_ID_SK,",
+				"          INSPECTION_ID_SK,",
+				"          RISK_ID_SK,",
+				"          DATE_ID_SK,",
+				"          RESULT_ID_SK,",
+				"          VIOLATION_ID_SK,",
+				"          MAXFACTSK,",
+				"          DW_JOB_ID = DimRestaurant@DW_JOB_ID,",
+				"          DW_LOAD_DT = DimRestaurant@DW_LOAD_DT,",
+				"          DATA_SOURCE_ID = union1@DATA_SOURCE_ID",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select4",
+				"select4 keyGenerate(output(RowNum as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> surrogateKey2",
+				"surrogateKey2 derive(FACT_INSPESCTION_ID_SK = MAXFACTSK+RowNum,",
+				"          DATA_WORKFLOW_NAME = 'df_FactInspections') ~> derivedColumn4",
+				"derivedColumn4 select(mapColumn(",
+				"          FACT_INSPESCTION_ID_SK,",
+				"          RESTAURANT_ID_SK,",
+				"          LOCATION_ID_SK,",
+				"          INSPECTION_ID_SK,",
+				"          RISK_ID_SK,",
+				"          DATE_ID_SK,",
+				"          RESULT_ID_SK,",
+				"          VIOLATION_ID_SK,",
+				"          Violation_Comment,",
+				"          DATA_SOURCE_ID,",
+				"          DW_JOB_ID,",
+				"          DW_LOAD_DT,",
+				"          DATA_WORKFLOW_NAME",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select5",
+				"select5 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          FACT_INSPECTION_ID_SK as decimal(38,0),",
+				"          RESTAURANT_ID_SK as decimal(38,0),",
+				"          LOCATION_ID_SK as decimal(38,0),",
+				"          INSPECTION_ID_SK as decimal(38,0),",
+				"          RISK_ID_SK as decimal(38,0),",
+				"          DATE_ID_SK as decimal(38,0),",
+				"          RESULT_ID_SK as decimal(38,0),",
+				"          VIOLATION_ID_SK as decimal(38,0),",
+				"          VIOLATION_COMMENT as string,",
+				"          INSPECTION_CNT as decimal(38,0),",
+				"          DATA_SOURCE_ID as string,",
+				"          DATA_WORKFLOW_NAME as string,",
+				"          DW_JOB_ID as string,",
+				"          DW_LOAD_DT as date",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     stageInsert: true,",
+				"     mapColumn(",
+				"          FACT_INSPECTION_ID_SK = FACT_INSPESCTION_ID_SK,",
+				"          RESTAURANT_ID_SK,",
+				"          LOCATION_ID_SK,",
+				"          INSPECTION_ID_SK,",
+				"          RISK_ID_SK,",
+				"          DATE_ID_SK,",
+				"          RESULT_ID_SK,",
+				"          VIOLATION_ID_SK,",
+				"          VIOLATION_COMMENT = Violation_Comment,",
+				"          DATA_SOURCE_ID,",
+				"          DATA_WORKFLOW_NAME,",
+				"          DW_JOB_ID,",
+				"          DW_LOAD_DT",
+				"     )) ~> sink1"
+			]
+		}
+	}
+}

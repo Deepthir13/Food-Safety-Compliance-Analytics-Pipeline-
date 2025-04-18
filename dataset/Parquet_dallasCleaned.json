@@ -1,0 +1,97 @@
+{
+	"name": "Parquet_dallasCleaned",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureDataLakeStorage_FinalProj",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "Dallas_Cleaned_ForViolation.parquet",
+				"fileSystem": "silver"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": [
+			{
+				"name": "RowID",
+				"type": "INT64"
+			},
+			{
+				"name": "Restaurant_Name",
+				"type": "UTF8"
+			},
+			{
+				"name": "Also_Known_As_Name",
+				"type": "UTF8"
+			},
+			{
+				"name": "License_Num",
+				"type": "INT64"
+			},
+			{
+				"name": "Facility_Type",
+				"type": "UTF8"
+			},
+			{
+				"name": "Risk",
+				"type": "UTF8"
+			},
+			{
+				"name": "Street_Address",
+				"type": "UTF8"
+			},
+			{
+				"name": "City",
+				"type": "UTF8"
+			},
+			{
+				"name": "State",
+				"type": "UTF8"
+			},
+			{
+				"name": "Zip_Code",
+				"type": "UTF8"
+			},
+			{
+				"name": "Inspection_Date",
+				"type": "DATE"
+			},
+			{
+				"name": "Inspection_Type",
+				"type": "UTF8"
+			},
+			{
+				"name": "Results",
+				"type": "UTF8"
+			},
+			{
+				"name": "Violation_Code",
+				"type": "UTF8"
+			},
+			{
+				"name": "Violation_Description",
+				"type": "UTF8"
+			},
+			{
+				"name": "Violations_Info",
+				"type": "UTF8"
+			},
+			{
+				"name": "Latitude",
+				"type": "DOUBLE"
+			},
+			{
+				"name": "Longitude",
+				"type": "DOUBLE"
+			},
+			{
+				"name": "Location",
+				"type": "UTF8"
+			}
+		]
+	}
+}

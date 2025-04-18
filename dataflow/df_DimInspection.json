@@ -1,5 +1,5 @@
 {
-	"name": "df_DimResults",
+	"name": "df_DimInspection",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
@@ -9,45 +9,45 @@
 						"referenceName": "ds_StageChicago",
 						"type": "DatasetReference"
 					},
-					"name": "sourceChichago"
+					"name": "SourceChicago"
 				},
 				{
 					"dataset": {
 						"referenceName": "ds_StageDallas",
 						"type": "DatasetReference"
 					},
-					"name": "sourceDallas"
+					"name": "SourceDallas"
 				},
 				{
 					"dataset": {
-						"referenceName": "ds_DimResults",
+						"referenceName": "ds_DimInspection",
 						"type": "DatasetReference"
 					},
-					"name": "DimResultstMaxId"
+					"name": "DimInspectionMaxId"
 				},
 				{
 					"dataset": {
-						"referenceName": "ds_DimResults",
+						"referenceName": "ds_DimInspection",
 						"type": "DatasetReference"
 					},
-					"name": "DimResults"
+					"name": "DimInspection"
 				}
 			],
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "ds_DimResults",
+						"referenceName": "ds_DimInspection",
 						"type": "DatasetReference"
 					},
-					"name": "sink1"
+					"name": "DimInspectionFinal"
 				}
 			],
 			"transformations": [
 				{
-					"name": "derivedColumn1"
+					"name": "FinalChicago"
 				},
 				{
-					"name": "derivedColumn2"
+					"name": "FinalDallas"
 				},
 				{
 					"name": "union1"
@@ -68,7 +68,7 @@
 					"name": "surrogateKey1"
 				},
 				{
-					"name": "derivedColumn3"
+					"name": "derivedColumn1"
 				},
 				{
 					"name": "select2"
@@ -76,7 +76,7 @@
 			],
 			"scriptLines": [
 				"parameters{",
-				"     JOB_ID as string ('39')",
+				"     Job_Id as string ('39')",
 				"}",
 				"source(output(",
 				"          INSPECTION_ID as decimal(38,0),",
@@ -99,7 +99,7 @@
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     format: 'table') ~> sourceChichago",
+				"     format: 'table') ~> SourceChicago",
 				"source(output(",
 				"          ROWID as decimal(38,0),",
 				"          RESTAURANT_NAME as string,",
@@ -121,17 +121,17 @@
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     format: 'table') ~> sourceDallas",
+				"     format: 'table') ~> SourceDallas",
 				"source(output(",
-				"          MAXRESULTSSK as decimal(38,0)",
+				"          MAXINSPECTIONSK as decimal(38,0)",
 				"     ),",
 				"     allowSchemaDrift: false,",
 				"     validateSchema: false,",
-				"     query: 'select NVL(MAX(RESULT_ID_SK),0) as MaxResultsSK FROM CD_SCHEMA.DIM_RESULTS',",
-				"     format: 'query') ~> DimResultstMaxId",
+				"     query: 'select NVL(MAX(INSPECTION_ID_SK),0) as MaxInspectionSK FROM CD_SCHEMA.DIM_INSPECTION',",
+				"     format: 'query') ~> DimInspectionMaxId",
 				"source(output(",
-				"          RESULT_ID_SK as decimal(38,0),",
-				"          INSPECTION_RESULTS as string,",
+				"          INSPECTION_ID_SK as decimal(38,0),",
+				"          INSPECTION_TYPE as string,",
 				"          DATA_SOURCE_ID as string,",
 				"          DATA_WORKFLOW_NAME as string,",
 				"          DW_JOB_ID as string,",
@@ -139,55 +139,54 @@
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     format: 'table') ~> DimResults",
-				"sourceChichago derive(DATA_SOURCE_ID = 'Chicago23') ~> derivedColumn1",
-				"sourceDallas derive(DATA_SOURCE_ID = 'Dallas23') ~> derivedColumn2",
-				"derivedColumn1, derivedColumn2 union(byName: false)~> union1",
-				"union1, DimResultstMaxId join(1==1,",
+				"     format: 'table') ~> DimInspection",
+				"SourceChicago derive(DATA_SOURCE_ID = 'Chicago23') ~> FinalChicago",
+				"SourceDallas derive(DATA_SOURCE_ID = 'Dallas23') ~> FinalDallas",
+				"FinalChicago, FinalDallas union(byName: true)~> union1",
+				"union1, DimInspectionMaxId join(1==1,",
 				"     joinType:'cross',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> join1",
-				"join1 aggregate(groupBy(DATA_SOURCE_ID,",
-				"          RESULTS,",
-				"          MAXRESULTSSK),",
+				"join1 aggregate(groupBy(MAXINSPECTIONSK,",
+				"          INSPECTION_TYPE,",
+				"          DATA_SOURCE_ID),",
 				"     CountRow = count(INSPECTION_ID)) ~> aggregate1",
-				"aggregate1, DimResults join(RESULTS == INSPECTION_RESULTS,",
+				"aggregate1, DimInspection join(aggregate1@INSPECTION_TYPE == DimInspection@INSPECTION_TYPE,",
 				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> join2",
 				"join2 select(mapColumn(",
-				"          MAXRESULTSSK,",
-				"          CountRow,",
-				"          RESULT_ID_SK,",
-				"          INSPECTION_RESULTS = RESULTS,",
-				"          DATA_SOURCE_ID = aggregate1@DATA_SOURCE_ID",
+				"          MAXINSPECTIONSK,",
+				"          INSPECTION_TYPE = aggregate1@INSPECTION_TYPE,",
+				"          DATA_SOURCE_ID = aggregate1@DATA_SOURCE_ID,",
+				"          INSPECTION_ID_SK",
 				"     ),",
-				"     skipDuplicateMapInputs: false,",
-				"     skipDuplicateMapOutputs: false) ~> select1",
-				"select1 keyGenerate(output(ROWNUM as long),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 keyGenerate(output(RowNum as long),",
 				"     startAt: 1L,",
 				"     stepValue: 1L) ~> surrogateKey1",
-				"surrogateKey1 derive(RESULT_ID_SK = MAXRESULTSSK+ROWNUM,",
-				"          DW_JOB_ID = $JOB_ID,",
-				"          DW_LOAD_DT = currentDate(),",
-				"          DATA_WORKFLOW_NAME = 'df_DimResults') ~> derivedColumn3",
-				"derivedColumn3 select(mapColumn(",
-				"          RESULT_ID_SK,",
-				"          INSPECTION_RESULTS,",
+				"surrogateKey1 derive(INSPECTION_ID_SK = MAXINSPECTIONSK +RowNum,",
+				"          DW_Job_Id = $Job_Id,",
+				"          DW_Load_Dt = currentDate(),",
+				"          DATA_WORKFLOW_NAME = 'df_DimInspection') ~> derivedColumn1",
+				"derivedColumn1 select(mapColumn(",
+				"          INSPECTION_ID_SK,",
+				"          INSPECTION_TYPE,",
 				"          DATA_SOURCE_ID,",
 				"          DATA_WORKFLOW_NAME,",
-				"          DW_JOB_ID,",
-				"          DW_LOAD_DT",
+				"          DW_Job_Id,",
+				"          DW_Load_Dt",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select2",
 				"select2 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
-				"          RESULT_ID_SK as decimal(38,0),",
-				"          INSPECTION_RESULTS as string,",
+				"          INSPECTION_ID_SK as decimal(38,0),",
+				"          INSPECTION_TYPE as string,",
 				"          DATA_SOURCE_ID as string,",
 				"          DATA_WORKFLOW_NAME as string,",
 				"          DW_JOB_ID as string,",
@@ -202,13 +201,13 @@
 				"     skipDuplicateMapOutputs: true,",
 				"     stageInsert: true,",
 				"     mapColumn(",
-				"          RESULT_ID_SK,",
-				"          INSPECTION_RESULTS,",
+				"          INSPECTION_ID_SK,",
+				"          INSPECTION_TYPE,",
 				"          DATA_SOURCE_ID,",
 				"          DATA_WORKFLOW_NAME,",
-				"          DW_JOB_ID,",
-				"          DW_LOAD_DT",
-				"     )) ~> sink1"
+				"          DW_JOB_ID = DW_Job_Id,",
+				"          DW_LOAD_DT = DW_Load_Dt",
+				"     )) ~> DimInspectionFinal"
 			]
 		}
 	}

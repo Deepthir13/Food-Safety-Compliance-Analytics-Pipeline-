@@ -1,0 +1,228 @@
+{
+	"name": "df_DimViolation_Final",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "Parquet_ChicagoCleaned",
+						"type": "DatasetReference"
+					},
+					"name": "sourceChicago"
+				},
+				{
+					"dataset": {
+						"referenceName": "Parquet_dallasCleaned",
+						"type": "DatasetReference"
+					},
+					"name": "sourceDallas"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_DimViolation",
+						"type": "DatasetReference"
+					},
+					"name": "DimViolationMaxId"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_DimViolation",
+						"type": "DatasetReference"
+					},
+					"name": "DimViolation"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_DimViolation",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "derivedColumn2"
+				},
+				{
+					"name": "union1"
+				},
+				{
+					"name": "join1"
+				},
+				{
+					"name": "aggregate1"
+				},
+				{
+					"name": "join2"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "surrogateKey1"
+				},
+				{
+					"name": "derivedColumn3"
+				},
+				{
+					"name": "select2"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     JobId as string ('12')",
+				"}",
+				"source(output(",
+				"          Inspection_ID as long,",
+				"          DBA_Name as string,",
+				"          AKA_Name as string,",
+				"          License_Num as long,",
+				"          Facility_Type as string,",
+				"          Risk as string,",
+				"          Address as string,",
+				"          City as string,",
+				"          State as string,",
+				"          Zip_Code as string,",
+				"          Inspection_Date as date,",
+				"          Inspection_Type as string,",
+				"          Results as string,",
+				"          Violation_Code as string,",
+				"          Violation_Description as string,",
+				"          Violation_Comment as string,",
+				"          Latitude as double,",
+				"          Longitude as double,",
+				"          Location as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet') ~> sourceChicago",
+				"source(output(",
+				"          RowID as long,",
+				"          Restaurant_Name as string,",
+				"          Also_Known_As_Name as string,",
+				"          License_Num as long,",
+				"          Facility_Type as string,",
+				"          Risk as string,",
+				"          Street_Address as string,",
+				"          City as string,",
+				"          State as string,",
+				"          Zip_Code as string,",
+				"          Inspection_Date as date,",
+				"          Inspection_Type as string,",
+				"          Results as string,",
+				"          Violation_Code as string,",
+				"          Violation_Description as string,",
+				"          Violations_Info as string,",
+				"          Latitude as double,",
+				"          Longitude as double,",
+				"          Location as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet') ~> sourceDallas",
+				"source(output(",
+				"          MAXVIOLATIONSK as decimal(38,0)",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     query: 'select NVL(MAX(VIOLATION_ID_SK),0) as MaxViolationSK FROM CD_SCHEMA.DIM_VIOLATION',",
+				"     format: 'query') ~> DimViolationMaxId",
+				"source(output(",
+				"          VIOLATION_ID_SK as decimal(38,0),",
+				"          VIOLATION_CODE as string,",
+				"          VIOLATION_DESCRIPTION as string,",
+				"          DATA_SOURCE_ID as string,",
+				"          DATA_WORKFLOW_NAME as string,",
+				"          DW_JOB_ID as string,",
+				"          DW_LOAD_DT as date",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'table') ~> DimViolation",
+				"sourceChicago derive(DATA_SOURCE_ID = 'Chicago23') ~> derivedColumn1",
+				"sourceDallas derive(DATA_SOURCE_ID = 'Dallas23') ~> derivedColumn2",
+				"derivedColumn1, derivedColumn2 union(byName: false)~> union1",
+				"union1, DimViolationMaxId join(1==1,",
+				"     joinType:'cross',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"join1 aggregate(groupBy(Violation_Code,",
+				"          MAXVIOLATIONSK,",
+				"          Violation_Description,",
+				"          DATA_SOURCE_ID),",
+				"     CountRow = count(Inspection_ID)) ~> aggregate1",
+				"aggregate1, DimViolation join(aggregate1@Violation_Code == DimViolation@VIOLATION_CODE",
+				"     && aggregate1@Violation_Description == DimViolation@VIOLATION_DESCRIPTION,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join2",
+				"join2 select(mapColumn(",
+				"          Violation_Code = aggregate1@Violation_Code,",
+				"          MAXVIOLATIONSK,",
+				"          Violation_Description = aggregate1@Violation_Description,",
+				"          CountRow,",
+				"          VIOLATION_ID_SK,",
+				"          DATA_SOURCE_ID = aggregate1@DATA_SOURCE_ID",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 keyGenerate(output(RowNum as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> surrogateKey1",
+				"surrogateKey1 derive(VIOLATION_ID_SK = MAXVIOLATIONSK+RowNum,",
+				"          DATA_WORKFLOW_NAME = 'df_DimViolation',",
+				"          DW_JOB_ID = $JobId,",
+				"          DW_LOAD_DT = currentDate()) ~> derivedColumn3",
+				"derivedColumn3 select(mapColumn(",
+				"          VIOLATION_ID_SK,",
+				"          Violation_Code,",
+				"          Violation_Description,",
+				"          DATA_SOURCE_ID,",
+				"          DATA_WORKFLOW_NAME,",
+				"          DW_JOB_ID,",
+				"          DW_LOAD_DT",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"select2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          VIOLATION_ID_SK as decimal(38,0),",
+				"          VIOLATION_CODE as string,",
+				"          VIOLATION_DESCRIPTION as string,",
+				"          DATA_SOURCE_ID as string,",
+				"          DATA_WORKFLOW_NAME as string,",
+				"          DW_JOB_ID as string,",
+				"          DW_LOAD_DT as date",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     stageInsert: true,",
+				"     mapColumn(",
+				"          VIOLATION_ID_SK,",
+				"          VIOLATION_CODE = Violation_Code,",
+				"          VIOLATION_DESCRIPTION = Violation_Description,",
+				"          DATA_SOURCE_ID,",
+				"          DATA_WORKFLOW_NAME,",
+				"          DW_JOB_ID,",
+				"          DW_LOAD_DT",
+				"     )) ~> sink1"
+			]
+		}
+	}
+}

@@ -1,0 +1,81 @@
+{
+	"name": "ds_DimDate",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Chicago_Dallas_Snowflake",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SnowflakeV2Table",
+		"schema": [
+			{
+				"name": "DATE_ID_SK",
+				"type": "NUMBER",
+				"precision": 38,
+				"scale": 0
+			},
+			{
+				"name": "DAY_NUM",
+				"type": "NUMBER",
+				"precision": 2,
+				"scale": 0
+			},
+			{
+				"name": "DAY_NAME",
+				"type": "VARCHAR"
+			},
+			{
+				"name": "DAY_ABBR",
+				"type": "VARCHAR"
+			},
+			{
+				"name": "IS_WEEKEND",
+				"type": "NUMBER",
+				"precision": 2,
+				"scale": 0
+			},
+			{
+				"name": "MONTH_NAME",
+				"type": "VARCHAR"
+			},
+			{
+				"name": "MONTH_ABBR",
+				"type": "VARCHAR"
+			},
+			{
+				"name": "MONTH_NUM",
+				"type": "VARCHAR"
+			},
+			{
+				"name": "DT",
+				"type": "DATE"
+			},
+			{
+				"name": "YEAR_NUM",
+				"type": "NUMBER",
+				"precision": 4,
+				"scale": 0
+			},
+			{
+				"name": "DATA_SOURCE_ID",
+				"type": "VARCHAR"
+			},
+			{
+				"name": "DATA_WORKFLOW_NAME",
+				"type": "VARCHAR"
+			},
+			{
+				"name": "DW_JOB_ID",
+				"type": "VARCHAR"
+			},
+			{
+				"name": "DW_LOAD_DT",
+				"type": "DATE"
+			}
+		],
+		"typeProperties": {
+			"schema": "CD_SCHEMA",
+			"table": "DIM_DATE"
+		}
+	}
+}
