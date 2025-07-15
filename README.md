@@ -36,7 +36,7 @@ Dallas - [Link]
 - **ETL & Pipelines:** Azure Data Factory, Databricks, Snowflake, SQL  
 - **Modeling:** ER/Studio (for Star Schema design)
 - **Cleaning & Scripting:** Python, Regex, SQL  
-- **Visualization:** Power BI
+- **Visualization:** Power BI, DAX
 
 ---
 
@@ -95,7 +95,8 @@ Built an interactive dashboard featuring:
 *(Add your screenshots here using the following format)*
 
 ```markdown
-![Dashboard_HomeScreen](images/Dashboard_HomeScreen.png)
+![Dashboard_HomeScreen](<img width="1296" height="714" alt="Home Screen - Chicago_Dallas_Visualizations - Power BI" src="https://github.com/user-attachments/assets/f15bc273-af68-4558-beb5-ab86c5c31a13" />
+)
 ```
 
 ## 🎯 Key Skills Demonstrated
