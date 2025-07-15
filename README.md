@@ -94,10 +94,10 @@ Built an interactive dashboard featuring:
 
 *(Add your screenshots here using the following format)*
 
-```markdown
+
 ![Dashboard_HomeScreen](<img width="1296" height="714" alt="Home Screen - Chicago_Dallas_Visualizations - Power BI" src="https://github.com/user-attachments/assets/f15bc273-af68-4558-beb5-ab86c5c31a13" />
 )
-```
+
 
 ## 🎯 Key Skills Demonstrated
 
