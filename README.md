@@ -10,8 +10,9 @@ I built this end-to-end data engineering and BI project using real-world food in
 
 ## Dataset
 
-Chicago - [Link]
-Dallas - [Link]
+Chicago - [[Link](https://data.cityofchicago.org/Health-Human-Services/Food-Inspections/4ijn-s7e5/data_preview)]
+
+Dallas - [[Link](https://www.dallasopendata.com/Services/Restaurant-and-Food-Establishment-Inspections-Octo/dri5-wcct/data_preview)]
 
 ### 👨‍💻 What I Did
 
