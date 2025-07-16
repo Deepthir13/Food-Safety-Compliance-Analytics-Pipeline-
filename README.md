@@ -34,7 +34,7 @@ Dallas - [[Link](https://www.dallasopendata.com/Services/Restaurant-and-Food-Est
 ## 💻 Tech Stack
 
 - **Data Profiling:** Alteryx, YData Profiling, Power Query
-- **ETL & Pipelines:** Azure Data Factory, Databricks, Snowflake, SQL  
+- **ETL & Pipelines:** Azure Data Factory, Databricks, Airflow, Snowflake, SQL  
 - **Modeling:** ER/Studio (for Star Schema design)
 - **Cleaning & Scripting:** Python, Regex, SQL  
 - **Visualization:** Power BI, DAX
