@@ -100,6 +100,7 @@ Built an interactive dashboard featuring:
 
 <img width="1328" height="741" alt="4" src="https://github.com/user-attachments/assets/a3d811cc-7e9a-4357-a4e8-fad2e9192845" />
 
+<img width="1328" height="749" alt="5" src="https://github.com/user-attachments/assets/7eed2207-89ff-4553-890b-ab3fc05950c3" />
 
 
 
