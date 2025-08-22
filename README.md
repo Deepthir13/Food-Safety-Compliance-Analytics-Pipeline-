@@ -98,7 +98,8 @@ Built an interactive dashboard featuring:
 
 <img width="1328" height="746" alt="3" src="https://github.com/user-attachments/assets/1ecf89bd-d6ed-491c-a3c5-b0d52d484be5" />
 
-<img width="1328" height="741" alt="4" src="https://github.com/user-attachments/assets/a3d811cc-7e9a-4357-a4e8-fad2e9192845" />
+<img width="1328" height="741" alt="4" src="https://github.com/user-attachments/assets/a3d811cc-7e9a-4357-a4e8-fad2e9192845" 
+
 
 
 
