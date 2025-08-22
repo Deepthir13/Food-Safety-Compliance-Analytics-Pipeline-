@@ -94,6 +94,12 @@ Built an interactive dashboard featuring:
 ### 🔍 Dashboard Snapshots
 <img width="1296" height="714" alt="Home Screen - Chicago_Dallas_Visualizations - Power BI" src="https://github.com/user-attachments/assets/a50a299c-3735-4f8f-9f2e-bf5acbca9577" />
 
+<img width="1327" height="746" alt="2" src="https://github.com/user-attachments/assets/a4aaefc3-39bf-43dc-8dea-913d2739436e" />
+
+<img width="1328" height="746" alt="3" src="https://github.com/user-attachments/assets/1ecf89bd-d6ed-491c-a3c5-b0d52d484be5" />
+
+<img width="1328" height="741" alt="4" src="https://github.com/user-attachments/assets/a3d811cc-7e9a-4357-a4e8-fad2e9192845" />
+
 
 
 ## 🎯 Key Skills Demonstrated
